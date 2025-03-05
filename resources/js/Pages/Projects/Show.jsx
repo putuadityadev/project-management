@@ -1,12 +1,37 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
-import {Head} from "@inertiajs/react";
+import {Head, router} from "@inertiajs/react";
 import {PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP} from "@/constant.js";
 import { SlCalender } from "react-icons/sl";
 import { GoClock } from "react-icons/go";
 import { HiOutlineStatusOnline } from "react-icons/hi";
+import TaskTable from "@/Components/TaskTable.jsx";
 
-export default function Show({auth, project}) {
-    console.log(project)
+export default function Show({auth, project, tasks, queryParams}) {
+    queryParams = queryParams || {}
+    const searchFiledChanged = (name, value) => {
+        value ? queryParams[name] = value : delete queryParams[name]
+        router.get(route('project.show', project.id), queryParams)
+        console.log(queryParams)
+    }
+
+    const onKeyPress = (name, e) => {
+        if (e.key !== 'Enter') return;
+        searchFiledChanged(name, e.target.value)
+    }
+
+    const sortChanged = (name) => {
+        if(name === queryParams.sort_field){
+            queryParams.sort_direction === 'asc'
+                ? queryParams.sort_direction = 'desc'
+                : queryParams.sort_direction = 'asc'
+            router.get(route('Task.index'), queryParams)
+        } else {
+            queryParams.sort_field = name
+            queryParams.sort_direction = 'asc'
+            router.get(route('Task.index'), queryParams)
+            console.log('Second condition')
+        }
+    }
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -16,7 +41,7 @@ export default function Show({auth, project}) {
                 </h2>
             }
         >
-            <Head title={`Project "${project.name}"`}/>
+            <Head title={`Project (${project.id})`}/>
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
@@ -62,7 +87,13 @@ export default function Show({auth, project}) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 flex flex-col sm:flex-row gap-6">
-                            Tasks
+                            <TaskTable
+                                tasks={tasks}
+                                queryParams={queryParams}
+                                sortChanged={sortChanged}
+                                onKeyPress={onKeyPress}
+                                searchFiledChanged={searchFiledChanged}
+                            />
                         </div>
                     </div>
                 </div>

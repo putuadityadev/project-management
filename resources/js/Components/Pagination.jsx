@@ -15,7 +15,6 @@
             }
         }, [queryParams]);
 
-        console.log(urlParams)
 
         return (
             <nav className="text-center text-4xl flex items-center justify-center gap-4 mt-10">

@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use Inertia\Inertia;
+use function Pest\Laravel\json;
 
 class TaskController extends Controller
 {
@@ -16,7 +17,7 @@ class TaskController extends Controller
     public function index()
     {
         $sortField = request("sort_field", "created_at");
-        $sortDirection = request("sort_direction", "desc");
+        $sortDirection = request("sort_direction", "asc");
 
         $query = Task::query();
         if(request("name")) {
@@ -27,7 +28,7 @@ class TaskController extends Controller
         }
 
         $tasks = $query->orderBy($sortField, $sortDirection)->paginate(10)->onEachSide(1);
-        return Inertia::render('task/Index', [
+        return Inertia::render('Task/Index', [
             "tasks" => TaskResource::collection($tasks),
             "queryParams" => request()->query() ?: null
         ]);
@@ -52,9 +53,11 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Task $task)
+    public function show($taskId)
     {
-        //
+        $taskData = Task::where('id',$taskId)->first();
+        return response()->json(['task' => new TaskResource($taskData)]);
+
     }
 
     /**
