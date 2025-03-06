@@ -5,8 +5,11 @@ import {PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP} from "@/constant.js";
 import TextInput from "@/Components/TextInput.jsx";
 import SelectInput from "@/Components/SelectInput.jsx";
 import { FaSortAlphaDown as AscIcon, FaSortAlphaDownAlt as DescIcon } from "react-icons/fa";
+import Alert from "@/Components/Alert.jsx";
+import {useEffect, useState} from "react";
+import Confirmation from "@/Components/Confirmation.jsx";
 
-export default function Index({auth, projects, queryParams = null}) {
+export default function Index({auth, projects, queryParams = null, success}) {
     queryParams = queryParams || {}
     const searchFiledChanged = (name, value) => {
         value ? queryParams[name] = value : delete queryParams[name]
@@ -33,7 +36,46 @@ export default function Index({auth, projects, queryParams = null}) {
         }
     }
 
-    console.log(queryParams)
+    const [currentSuccess, setCurrentSuccess] = useState(null)
+    const [isVisible, setIsVisible] = useState(false)
+    useEffect(() => {
+        if(success && success !== currentSuccess){
+            setCurrentSuccess(success)
+            setIsVisible(true)
+            setTimeout(() => {
+                setIsVisible(false)
+                setCurrentSuccess(null)
+            }, [4000])
+        }
+    }, [success])
+
+   const [projectDelete, setProjectDelete] = useState(null)
+
+    const handleDelete = (project) => {
+        setProjectDelete(project)
+        console.log(projectDelete)
+    }
+
+    const confirmDelete = () => {
+        if(projectDelete) {
+            router.delete(route('project.destroy',projectDelete.id), {
+                preserveScroll: true,
+                preserveState: false,
+                onSuccess: () => {
+                    setProjectDelete(null)
+                },
+                onError: (err) => {
+                    console.error(err)
+                    setProjectDelete(null)
+                }
+            })
+        }
+    }
+
+    const cancelDelete = () => {
+        setProjectDelete(null)
+    }
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -52,6 +94,18 @@ export default function Index({auth, projects, queryParams = null}) {
 
             }
         >
+            {success && isVisible &&
+                <Alert message={success} />
+            }
+            {projectDelete &&
+                <Confirmation
+                    handleConfirm={confirmDelete}
+                    handleCancel={cancelDelete}
+                    projectName={projectDelete.name}
+                />
+            }
+
+
             <Head title="Projects"/>
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -180,9 +234,9 @@ export default function Index({auth, projects, queryParams = null}) {
                                                 <Link href={route("project.edit", project.id)} className="text-blue-600 font-medium hover:underline mx-1">
                                                     Edit
                                                 </Link>
-                                                <Link href={route("project.destroy", project.id)} className="text-red-600 font-medium hover:underline mx-1">
+                                                <button onClick={() => handleDelete(project)} className="text-red-600 font-medium hover:underline mx-1">
                                                     Delete
-                                                </Link>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}

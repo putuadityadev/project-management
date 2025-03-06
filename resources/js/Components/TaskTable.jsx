@@ -154,7 +154,7 @@ export default function TaskTable ({tasks, queryParams, onKeyPress, sortChanged,
                             </td>
                             <td className="px-3 py-2">{task.created_at}</td>
                             <td className="px-3 py-2 text-nowrap">{task.due_date}</td>
-                            <td className="px-3 py-2 ">{task.createdBy.name}</td>
+                            <td className="px-3 py-2 text-start">{task.createdBy.name}</td>
                             <td className="px-3 py-2 text-right">
                                 <Link href={route("Task.edit", task.id)} className="text-blue-600 font-medium hover:underline mx-1">
                                     Edit

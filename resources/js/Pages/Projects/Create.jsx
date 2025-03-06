@@ -19,7 +19,7 @@ export default function Create({ auth }) {
     const handleSubmitForm = (e) => {
         e.preventDefault();
 
-        post(route("project.create"))
+        post(route("project.store"))
     }
     return (
         <AuthenticatedLayout
@@ -50,8 +50,7 @@ export default function Create({ auth }) {
                                             id="project_image_path"
                                             type="file"
                                             name="image"
-                                            value={data.image}
-                                            onChange={(e) => setData('image', e.target.value)}
+                                            onChange={(e) => setData('image', e.target.files[0])}
                                             className="mt-1 block w-full"
                                         />
                                     </div>
@@ -121,9 +120,9 @@ export default function Create({ auth }) {
                                        >
                                            Cancel
                                        </Link>
-                                        <buttom className="text-white bg-gray-700 px-4 py-2 rounded hover:bg-gray-800">
+                                        <button className="text-white bg-gray-700 px-4 py-2 rounded hover:bg-gray-800">
                                             Submit
-                                        </buttom>
+                                        </button>
                                     </div>
                                 </form>
                             </div>

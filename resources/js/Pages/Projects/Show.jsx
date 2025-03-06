@@ -46,8 +46,8 @@ export default function Show({auth, project, tasks, queryParams}) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 flex flex-col sm:flex-row gap-6">
-                            <div className="w-full sm:w-1/2 rounded-lg overflow-hidden">
-                                <img src={project.image_path} alt={`image ${project.name}`}/>
+                            <div className="w-full sm:w-1/2 h-96 rounded-lg overflow-hidden">
+                                <img src={project.image_path} alt={`image ${project.name}`} className="w-full"/>
                             </div>
                             <div className="flex flex-col gap-2 sm:gap-3 w-full sm:w-1/2">
                                 <h1 className="font-bold text-2xl sm:text-4xl sm:mb-1">{project.name}</h1>
