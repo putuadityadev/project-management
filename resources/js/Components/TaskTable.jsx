@@ -143,7 +143,7 @@ export default function TaskTable ({tasks, queryParams, onKeyPress, sortChanged,
                                 <img src={task.image_path} alt={`image-${task.name}`} height={80} width={80} className="rounded my-3"/>
                             </td>
                             <td className="px-3 py-2">
-                                <button onClick={() => handleSelectTask(task.id)} className="hover:text-black hover:underline">
+                                <button onClick={() => handleSelectTask(task.id)} className="hover:text-black hover:underline text-start">
                                     {task.name}
                                 </button>
                             </td>

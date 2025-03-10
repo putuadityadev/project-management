@@ -1,19 +1,17 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
 import {Head, Link, router} from "@inertiajs/react";
 import Pagination from "@/Components/Pagination.jsx";
-import {PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP} from "@/constant.js";
 import TextInput from "@/Components/TextInput.jsx";
-import SelectInput from "@/Components/SelectInput.jsx";
 import { FaSortAlphaDown as AscIcon, FaSortAlphaDownAlt as DescIcon } from "react-icons/fa";
 import Alert from "@/Components/Alert.jsx";
 import {useEffect, useState} from "react";
 import Confirmation from "@/Components/Confirmation.jsx";
 
-export default function Index({auth, projects, queryParams = null, flash}) {
+export default function Index({auth, users, queryParams = null, flash}) {
     queryParams = queryParams || {}
     const searchFiledChanged = (name, value) => {
         value ? queryParams[name] = value : delete queryParams[name]
-        router.get(route('project.index'), queryParams)
+        router.get(route('user.index'), queryParams)
         console.log(queryParams)
     }
 
@@ -27,11 +25,11 @@ export default function Index({auth, projects, queryParams = null, flash}) {
             queryParams.sort_direction === 'asc'
                 ? queryParams.sort_direction = 'desc'
                 : queryParams.sort_direction = 'asc'
-            router.get(route('project.index'), queryParams)
+            router.get(route('user.index'), queryParams)
         } else {
             queryParams.sort_field = name
             queryParams.sort_direction = 'asc'
-            router.get(route('project.index'), queryParams)
+            router.get(route('user.index'), queryParams)
             console.log('Second condition')
         }
     }
@@ -50,34 +48,34 @@ export default function Index({auth, projects, queryParams = null, flash}) {
         }
     }, [currentSucces])
 
-   const [projectDelete, setProjectDelete] = useState(null)
+   const [userDelete, setUserDelete] = useState(null)
 
-    const handleDelete = (project) => {
-        setProjectDelete(project)
-        console.log(projectDelete)
+    const handleDelete = (user) => {
+        setUserDelete(user)
+        console.log(userDelete)
     }
 
     const confirmDelete = () => {
-        if(projectDelete) {
-            router.delete(route('project.destroy',projectDelete.id), {
+        if(userDelete) {
+            router.delete(route('user.destroy',userDelete.id), {
                 preserveScroll: true,
                 preserveState: false,
                 onSuccess: (page) => {
-                    setProjectDelete(null)
+                    setUserDelete(null)
                     if(page.props.success){
                         setCurrentSucces(page.props.success)
                     }
                 },
                 onError: (err) => {
                     console.error(err)
-                    setProjectDelete(null)
+                    setUserDelete(null)
                 }
             })
         }
     }
 
     const cancelDelete = () => {
-        setProjectDelete(null)
+        setUserDelete(null)
     }
 
     return (
@@ -86,10 +84,10 @@ export default function Index({auth, projects, queryParams = null, flash}) {
             header={
                 <div className="flex justify-between items-center" >
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                        Projects
+                        Users
                     </h2>
                     <Link
-                        href={route('project.create')}
+                        href={route('user.create')}
                         className="bg-gray-600 py-2 px-3 text-white rounded-lg shadow hover:bg-gray-700 transition-all"
                     >
                         Add new
@@ -99,55 +97,45 @@ export default function Index({auth, projects, queryParams = null, flash}) {
             }
         >
             {isVisible && currentSucces && <Alert message={currentSucces} />}
-            {projectDelete &&
+            {userDelete &&
                 <Confirmation
                     handleConfirm={confirmDelete}
                     handleCancel={cancelDelete}
-                    projectName={projectDelete.name}
+                    userName={userDelete.name}
                 />
             }
 
 
-            <Head title="Projects"/>
+            <Head title="Users"/>
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            {/*<pre>{JSON.stringify(projects, undefined, 2)}</pre>*/}
+                            {/*<pre>{JSON.stringify(users, undefined, 2)}</pre>*/}
                             <div className="overflow-auto">
                                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
                                     <tr className="text-nowrap">
                                         <th className="px-3 py-4"></th>
-                                        <th className="px-3 py-4"></th>
                                         <th className="px-3 py-4">
                                             <TextInput
                                                 defaultValue={queryParams.name}
                                                 className={`w-full`}
-                                                placeholder="Search by project name..."
+                                                placeholder="Search by user name..."
                                                 onBlur={(e) => searchFiledChanged('name', e.target.value)}
                                                 onKeyPress={(e) => onKeyPress('name', e)}
                                             />
                                         </th>
                                         <th className="px-3 py-4">
-                                            <SelectInput
-                                                defaultValue={queryParams.status}
-                                                onChange={(e) => searchFiledChanged('status', e.target.value)}
-                                            >
-                                                <option value="">Select by</option>
-                                                <option value="pending">Pending</option>
-                                                <option value="in_progress">In Progress</option>
-                                                <option value="completed">Completed</option>
-                                            </SelectInput>
+                                            <TextInput
+                                                defaultValue={queryParams.email}
+                                                className={`w-full`}
+                                                placeholder="Search by user email..."
+                                                onBlur={(e) => searchFiledChanged('email', e.target.value)}
+                                                onKeyPress={(e) => onKeyPress('email', e)}
+                                            />
                                         </th>
                                         <th className="px-3 py-4"></th>
-                                        <th className="px-3 py-4"></th>
-                                        <th className="px-3 py-4">
-                                            {/*<TextInput*/}
-                                            {/*    placeholder="Project owner"*/}
-                                            {/*    className="w-fu"*/}
-                                            {/*/>*/}
-                                        </th>
                                         <th className="px-3 py-4"></th>
                                     </tr>
                                     </thead>
@@ -163,7 +151,6 @@ export default function Index({auth, projects, queryParams = null, flash}) {
                                                 }
                                             </div>
                                         </th>
-                                        <th className="px-3 py-4">Image</th>
                                         <th onClick={(e) => sortChanged("name")} className="px-3 py-4 hover:cursor-pointer">
                                             <div className="flex items-center justify-between gap-2">
                                                 Name
@@ -174,10 +161,10 @@ export default function Index({auth, projects, queryParams = null, flash}) {
                                                 }
                                             </div>
                                         </th>
-                                        <th onClick={(e) => sortChanged("status")} className="px-3 py-4 hover:cursor-pointer">
+                                        <th onClick={(e) => sortChanged("email")} className="px-3 py-4 hover:cursor-pointer">
                                             <div className="flex items-center justify-between gap-2">
-                                                Status
-                                                {queryParams.sort_field === 'status'
+                                                Email
+                                                {queryParams.sort_field === 'email'
                                                 && queryParams.sort_direction === 'asc'
                                                     ? <AscIcon />
                                                     : <DescIcon />
@@ -194,49 +181,29 @@ export default function Index({auth, projects, queryParams = null, flash}) {
                                                 }
                                             </div>
                                         </th>
-                                        <th onClick={(e) => sortChanged("due_date")} className="px-3 py-4 hover:cursor-pointer">
-                                            <div className="flex items-center justify-between gap-2">
-                                                Due Date
-                                                {queryParams.sort_field === 'due_date'
-                                                && queryParams.sort_direction === 'asc'
-                                                    ? <AscIcon />
-                                                    : <DescIcon />
-                                                }
-                                            </div>
-                                        </th>
-                                        <th className="px-3 py-4 ">Created By</th>
                                         <th className="px-3 py-4">Actions</th>
                                     </tr>
                                     </thead>
 
                                     <tbody>
-                                    {projects.data.map((project) => (
-                                        <tr key={project.id} className="bg-white border-b">
-                                            <td className="px-3 py2">{project.id}</td>
-                                            <td className="px-3 py2">
-                                                <img src={project.image_path} alt={`image-${project.name}`} height={80} width={80} className="rounded my-3"/>
-                                            </td>
+                                    {users.data.map((user) => (
+                                        <tr key={user.id} className="bg-white border-b">
+                                            <td className="px-3 py2">{user.id}</td>
                                             <td className="px-3 py-2">
                                                 <Link
-                                                    href={route('project.show', project.id)}
-                                                    className="hover:underline hover:text-black"
                                                 >
-                                                    {project.name}
+                                                    {user.name}
                                                 </Link>
                                             </td>
                                             <td className="px-3 py-2">
-                                            <span className={`px-3 py-1 text-white rounded ${PROJECT_STATUS_CLASS_MAP[project.status]}`}>
-                                                {PROJECT_STATUS_TEXT_MAP[project.status]}
-                                            </span>
+                                                {user.email}
                                             </td>
-                                            <td className="px-3 py-2">{project.created_at}</td>
-                                            <td className="px-3 py-2 text-nowrap">{project.due_date}</td>
-                                            <td className="px-3 py-2 ">{project.createdBy.name}</td>
+                                            <td className="px-3 py-2">{user.created_at}</td>
                                             <td className="px-3 py-2 text-right">
-                                                <Link href={route("project.edit", project.id)} className="text-blue-600 font-medium hover:underline mx-1">
+                                                <Link href={route("user.edit", user.id)} className="text-blue-600 font-medium hover:underline mx-1">
                                                     Edit
                                                 </Link>
-                                                <button onClick={() => handleDelete(project)} className="text-red-600 font-medium hover:underline mx-1">
+                                                <button onClick={() => handleDelete(user)} className="text-red-600 font-medium hover:underline mx-1">
                                                     Delete
                                                 </button>
                                             </td>
@@ -246,7 +213,7 @@ export default function Index({auth, projects, queryParams = null, flash}) {
                                 </table>
                             </div>
                             <Pagination
-                                Links={projects.meta.links}
+                                Links={users.meta.links}
                                 queryParams={queryParams}
                             />
                         </div>
